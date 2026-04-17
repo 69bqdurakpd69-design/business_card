@@ -1,0 +1,21 @@
+{
+    "hello": "Hi, I'm",
+    "subtitle": "Fullstack Developer",
+    "about_text": "I create modern web applications from scratch. I work with both frontend (React, Vue) and backend (Node.js, Python, databases). I love clean code and solving complex problems.",
+    "tech_title": "💻 Tech Stack",
+    "db_note": "* Deep experience with databases: design, query optimization, big data processing.",
+    "contacts_title": "📞 Contacts",
+    "open_text": "⚡️ Open to job offers and interesting projects. Write to Telegram — I reply fast!",
+    "my_works": "My Works",
+    "portfolio_sub": "Here are some projects I've developed",
+    "gallery_title": "🎨 Style Gallery",
+    "gallery_desc": "4 rows with 3 cards each, each with unique design (random order)",
+    "portfolio1_title": "Tech e-commerce",
+    "portfolio1_desc": "Full e-commerce on React + Node.js with cart, payment and admin panel.",
+    "portfolio2_title": "Analytics Dashboard",
+    "portfolio2_desc": "Interactive dashboard with charts and data export.",
+    "portfolio3_title": "Corporate website",
+    "portfolio3_desc": "Company website with CMS and blog.",
+    "phone_copied": "Phone copied",
+    "email_copied": "Email copied"
+}

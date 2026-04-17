@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Роман Эм - Fullstack разработчик</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">Роман Эм</div>
+            <div class="nav-menu">
+                <div class="nav-link active" data-tab="about">Обо мне</div>
+                <div class="nav-link" data-tab="portfolio">Портфолио</div>
+                <div class="lang-selector">
+                    <button class="lang-btn active" data-lang="ru">RU</button>
+                    <button class="lang-btn" data-lang="en">EN</button>
+                </div>
+                <div class="theme-toggle">
+                    <button class="active" onclick="setTheme('light')">☀️</button>
+                    <button onclick="setTheme('dark')">🌙</button>
+                </div>
+            </div>
+            <div class="burger-menu" id="burgerMenu">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </header>
+    <div class="mobile-nav" id="mobileNav">
+        <div class="nav-link active" data-tab="about">Обо мне</div>
+        <div class="nav-link" data-tab="portfolio">Портфолио</div>
+        <div class="lang-selector">
+            <button class="lang-btn active" data-lang="ru">RU</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+        <div class="theme-toggle">
+            <button class="active" onclick="setTheme('light')">☀️ Светлая</button>
+            <button onclick="setTheme('dark')">🌙 Тёмная</button>
+        </div>
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+    <main class="container">
+        <div id="about" class="tab-content active">
+            <div class="card">
+                <h1 class="greeting"><span data-i18n="hello">Привет, я</span> <span>Роман Эм</span></h1>
+                <div class="subtitle" data-i18n="subtitle">Fullstack разработчик</div>
+                <p style="margin-bottom: 1.5rem; font-size: 1.1rem;" data-i18n="about_text">Создаю современные веб-приложения с нуля. Работаю как с клиентской частью (React, Vue), так и с серверной (Node.js, Python, базы данных). Люблю чистый код и решать сложные задачи.</p>
+                <div class="skills-section">
+                    <h2 class="skills-title" data-i18n="tech_title">💻 Технологии и языки</h2>
+                    <div class="skills-grid" id="skillsGrid"></div>
+                    <p style="color: var(--text-secondary); margin-top: 1rem;" data-i18n="db_note">* Глубокий уровень работы с базами данных: проектирование, оптимизация запросов, работа с большими объемами данных</p>
+                </div>
+                <h2 style="margin: 2rem 0 1rem;" data-i18n="contacts_title">📞 Контакты</h2>
+                <div class="contacts" id="contactsBlock"></div>
+                <p style="color: var(--text-secondary);" data-i18n="open_text">⚡️ Открыт к предложениям о работе и интересным проектам. Пишите в Telegram — отвечаю быстро!</p>
+            </div>
+        </div>
+
+        <div id="portfolio" class="tab-content">
+            <h1 style="font-size: 2rem; margin-bottom: 0.5rem;" data-i18n="my_works">Мои работы</h1>
+            <p class="subtitle" style="margin-bottom: 2rem;" data-i18n="portfolio_sub">Здесь собраны некоторые проекты, которые я разработал</p>
+            <div class="portfolio-grid" id="portfolioGrid"></div>
+            <div class="subsite-section">
+                <h2 class="subsite-title" data-i18n="gallery_title">🎨 Галерея стилей</h2>
+                <p class="subsite-description" data-i18n="gallery_desc">4 строки по 3 карточки, у каждой свой уникальный дизайн</p>
+                <div class="showcase-grid" id="showcaseGrid"></div>
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="container">© 2026 Роман Эм. Fullstack разработчик.</div>
+    </footer>
+    <div id="copyToast" class="copy-toast">Скопировано!</div>
+
+    <script>
+        // Данные для портфолио
+        const skillsList = ["C++", "C#", "JavaScript", "PHP", "Python", "SQL", "PostgreSQL", "MySQL", "MongoDB", "Redis"];
+        const portfolioData = [{
+            title_ru: "Интернет-магазин техники",
+            desc_ru: "Полноценный e-commerce на React + Node.js с корзиной, оплатой и админкой.",
+            title_en: "Tech e-commerce",
+            desc_en: "Full e-commerce on React + Node.js with cart, payment and admin panel.",
+            tech: ["React", "Node.js", "MongoDB"]
+        }, {
+            title_ru: "Дашборд для аналитики",
+            desc_ru: "Интерактивная панель управления с графиками и экспортом данных.",
+            title_en: "Analytics Dashboard",
+            desc_en: "Interactive dashboard with charts and data export.",
+            tech: ["Vue.js", "D3.js", "Express"]
+        }, {
+            title_ru: "Корпоративный сайт",
+            desc_ru: "Сайт для компании с системой управления контентом (CMS) и блогом.",
+            title_en: "Corporate website",
+            desc_en: "Company website with CMS and blog.",
+            tech: ["Next.js", "Tailwind", "Sanity"]
+        }];
+
+        const styleNames = ["minimal", "neon", "glass", "retro", "gradient", "border", "shadow", "pastel", "dark", "accent", "metal", "nature"];
+
+        // Перемешивание массива
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Построение галереи стилей (переставленные строки: 1↔4, 2↔3)
+        function buildShowcase() {
+            let shuffledStyles = shuffleArray([...styleNames]);
+            const container = document.getElementById('showcaseGrid');
+            container.innerHTML = '';
+            const rowLabels = ["💎 Строка 4", "🌟 Строка 3", "🎨 Строка 2", "✨ Строка 1"]; // Swapped order
+            const swappedRows = [3, 2, 1, 0]; // Row indices swapped: 0->3, 1->2, 2->1, 3->0
+            for (let i = 0; i < 4; i++) {
+                const r = swappedRows[i];
+                const rowDiv = document.createElement('div');
+                const labelSpan = document.createElement('div');
+                labelSpan.className = 'row-label';
+                const rowStyles = shuffledStyles.slice(r * 3, r * 3 + 3);
+                labelSpan.innerText = `${rowLabels[i]} · ${rowStyles.map(s => `.style-${s}`).join(', ')}`;
+                rowDiv.appendChild(labelSpan);
+                const cardsRow = document.createElement('div');
+                cardsRow.className = 'showcase-row';
+                for(let style of rowStyles) {
+                    const card = document.createElement('div');
+                    card.className = `style-card style-${style}`;
+                    card.innerHTML = `
+                        <div class="card-header"><h3>.style-${style}</h3></div>
+                        <div class="card-body"><p>Уникальный дизайн карточки с улучшенным контрастом текста</p></div>
+                        <div class="card-footer"><div class="portfolio-tech"><div class="tech-tag">CSS</div><div class="tech-tag">HTML</div></div></div>
+                    `;
+                    cardsRow.appendChild(card);
+                }
+                rowDiv.appendChild(cardsRow);
+                container.appendChild(rowDiv);
+            }
+        }
+        
+        // Надёжная автоподгрузка LeetCode через GraphQL + CORS proxy (3 ретрая)
+        async function loadLeetCodeStats() {
+            const leetcodeItem = document.querySelector('.contact-item.leetcode');
+            if(!leetcodeItem) return;
+            
+            let statsDiv = leetcodeItem.querySelector('.leetcode-stats');
+            if(!statsDiv) {
+                statsDiv = document.createElement('div');
+                statsDiv.className = 'leetcode-stats loading';
+                statsDiv.innerHTML = '📊 Загрузка...';
+                leetcodeItem.appendChild(statsDiv);
+            }
+            
+            const username = 'itUwUti';
+            
+            async function fetchStats(attempt = 1) {
+                try {
+                    // LeetCode GraphQL query для user stats
+                    const query = `query userProfile($username: String!) {
+                        matchedUser(username: $username) {
+                            username
+                            problemsSolvedBeatsStats { 
+                                problemsSolvedBeatsStats { 
+                                    difficulty 
+                                    percentage 
+                                } 
+                            }
+                            submitStatsGlobal { 
+                                acSubmissionNum { 
+                                    difficulty 
+                                    count 
+                                }
+                            }
+                            profile {
+                                ranking
+                            }
+                        }
+                    }`;
+                    
+                    const graphqlUrl = `https://leetcode.com/graphql`;
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(graphqlUrl)}`;
+                    
+                    const response = await fetch(proxyUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ query, variables: { username } })
+                    });
+                    
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const data = await response.json();
+                    const user = data?.data?.matchedUser;
+                    
+                    if (user) {
+                        const acStats = user.submitStatsGlobal?.acSubmissionNum?.[0] || {};
+                        const total = acStats.count || 0;
+                        const easy = user.submitStatsGlobal?.acSubmissionNum?.[1]?.count || 0;
+                        const medium = user.submitStatsGlobal?.acSubmissionNum?.[2]?.count || 0;
+                        const hard = user.submitStatsGlobal?.acSubmissionNum?.[3]?.count || 0;
+                        const rank = user.profile?.ranking?.globalRanking || '—';
+                        
+                        statsDiv.className = 'leetcode-stats';
+                        statsDiv.innerHTML = `
+                            🏆 ${total} задач
+                            <span style="color: #2c5e2e;">🟢 ${easy}</span>
+                            <span style="color: #e6a117;">🟡 ${medium}</span>
+                            <span style="color: #c23b22;">🔴 ${hard}</span>
+                            | 📈 #${rank}
+                        `;
+                        return;
+                    }
+                    throw new Error('No user data');
+                } catch (e) {
+                    console.log(`LeetCode fetch attempt ${attempt} failed:`, e);
+                    if (attempt < 3) {
+                        await new Promise(r => setTimeout(r, 1000 * attempt));
+                        return fetchStats(attempt + 1);
+                    }
+                    statsDiv.innerHTML = '📊 Не удалось загрузить статистику LeetCode';
+                    statsDiv.classList.remove('loading');
+                }
+            }
+            
+        }
+        
+        // Построение контактов
+        function buildContacts() {
+            const contactsContainer = document.getElementById('contactsBlock');
+            contactsContainer.innerHTML = `
+                <div class="contact-item" onclick="copyToClipboard('+79633841406', '${getText('phone_copied')}')">📞 +7 (963) 384-14-06</div>
+                <a href="https://t.me/itUwUti" target="_blank" class="contact-item telegram">✈️ Telegram: @itUwUti</a>
+                <div class="contact-item" onclick="copyToClipboard('romanem593@gmail.com', '${getText('email_copied')}')">📧 romanem593@gmail.com</div>
+                <a href="https://github.com/69bqdurakpd69-design" target="_blank" class="contact-item github">💻 GitHub</a>
+                <a href="https://leetcode.com/u/itUwUti/" target="_blank" class="contact-item leetcode">⚡ LeetCode (itUwUti)</a>
+            `;
+            // Загружаем статистику LeetCode
+            setTimeout(() => loadLeetCodeStats(), 500);
+        }
+        
+        // Построение портфолио
+        function buildPortfolio(lang) {
+            const container = document.getElementById('portfolioGrid');
+            container.innerHTML = '';
+            portfolioData.forEach(item => {
+                const title = lang === 'ru' ? item.title_ru : item.title_en;
+                const desc = lang === 'ru' ? item.desc_ru : item.desc_en;
+                const div = document.createElement('div');
+                div.className = 'portfolio-item';
+                div.innerHTML = `
+                    <div class="portfolio-image">📱 Проект</div>
+                    <div class="portfolio-content">
+                        <h3 class="portfolio-title">${title}</h3>
+                        <p class="portfolio-description">${desc}</p>
+                        <div class="portfolio-tech">${item.tech.map(t => `<div class="tech-tag">${t}</div>`).join('')}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        // Построение скиллов
+        function buildSkills() {
+            const grid = document.getElementById('skillsGrid');
+            grid.innerHTML = skillsList.map(skill => `<div class="skill-tag ${['C++','C#','JavaScript','PHP','Python'].includes(skill) ? 'highlight' : ''}">${skill}</div>`).join('');
+        }
+        
+        // Переводы
+        const translations = {
+            ru: {
+                hello: "Привет, я", subtitle: "Fullstack разработчик", about_text: "Создаю современные веб-приложения с нуля. Работаю как с клиентской частью (React, Vue), так и с серверной (Node.js, Python, базы данных). Люблю чистый код и решать сложные задачи.",
+                tech_title: "💻 Технологии и языки", db_note: "* Глубокий уровень работы с базами данных: проектирование, оптимизация запросов, работа с большими объемами данных",
+                contacts_title: "📞 Контакты", open_text: "⚡️ Открыт к предложениям о работе и интересным проектам. Пишите в Telegram — отвечаю быстро!",
+                my_works: "Мои работы", portfolio_sub: "Здесь собраны некоторые проекты, которые я разработал",
+                gallery_title: "🎨 Галерея стилей", gallery_desc: "4 строки по 3 карточки, у каждой свой уникальный дизайн (случайный порядок)",
+                phone_copied: "Телефон скопирован", email_copied: "Email скопирован"
+            },
+            en: {
+                hello: "Hi, I'm", subtitle: "Fullstack Developer", about_text: "I create modern web applications from scratch. I work with both frontend (React, Vue) and backend (Node.js, Python, databases). I love clean code and solving complex problems.",
+                tech_title: "💻 Tech Stack", db_note: "* Deep experience with databases: design, query optimization, big data processing.",
+                contacts_title: "📞 Contacts", open_text: "⚡️ Open to job offers and interesting projects. Write to Telegram — I reply fast!",
+                my_works: "My Works", portfolio_sub: "Here are some projects I've developed",
+                gallery_title: "🎨 Style Gallery", gallery_desc: "4 rows with 3 cards each, each with unique design (random order)",
+                phone_copied: "Phone copied", email_copied: "Email copied"
+            }
+        };
+        
+        let currentLang = 'ru';
+        function getText(key) { return translations[currentLang][key] || key; }
+        
+        function updateUIByLang() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(translations[currentLang][key]) el.innerText = translations[currentLang][key];
+            });
+            buildPortfolio(currentLang);
+            buildContacts(); // перестраиваем контакты с правильными текстами
+        }
+        
+        function setLanguage(lang) {
+            currentLang = lang;
+            updateUIByLang();
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if(btn.getAttribute('data-lang') === lang) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+        
+        // Табы
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            document.querySelectorAll(`.nav-link[data-tab="${tabName}"]`).forEach(link => link.classList.add('active'));
+            
+            // Закрываем мобильное меню
+            document.getElementById('mobileNav').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+        
+        // Тема
+        function setTheme(theme) {
+            if(theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+            else document.documentElement.removeAttribute('data-theme');
+            document.querySelectorAll('.theme-toggle button').forEach(btn => {
+                btn.classList.remove('active');
+                if((theme === 'dark' && (btn.textContent.includes('🌙') || btn.textContent.includes('Тёмная'))) ||
+                   (theme === 'light' && (btn.textContent.includes('☀️') || btn.textContent.includes('Светлая'))))
+                    btn.classList.add('active');
+            });
+        }
+        
+        // Копирование
+        function copyToClipboard(text, message) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('copyToast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            }).catch(() => alert('Нажмите Ctrl+C: '+text));
+        }
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            buildSkills();
+            buildContacts();
+            buildPortfolio('ru');
+            buildShowcase();
+            
+            // Обработчики табов
+            document.querySelectorAll('.nav-link[data-tab]').forEach(link => {
+                link.addEventListener('click', () => showTab(link.getAttribute('data-tab')));
+            });
+            
+            // Обработчики языка
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => setLanguage(btn.getAttribute('data-lang')));
+            });
+            
+            // Бургер меню
+            const burger = document.getElementById('burgerMenu');
+            const mobileNav = document.getElementById('mobileNav');
+            const overlay = document.getElementById('overlay');
+            burger.addEventListener('click', () => {
+                mobileNav.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+            overlay.addEventListener('click', () => {
+                mobileNav.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+            
+            // Обработчики в мобильном меню
+            document.querySelectorAll('#mobileNav .nav-link').forEach(link => {
+                link.addEventListener('click', () => showTab(link.getAttribute('data-tab')));
+            });
+        });
+    </script>
+</body>
+
+</html>
